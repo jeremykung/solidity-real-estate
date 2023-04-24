@@ -141,7 +141,7 @@ describe('Escrow', () => {
             transaction = await escrow.connect(seller).approveSale(1)
             await transaction.wait()
 
-            transaction = await escrow.connect(seller).approveSale(1)
+            transaction = await escrow.connect(lender).approveSale(1)
             await transaction.wait()
 
             await lender.sendTransaction({ to: escrow.address, value:(5) })
@@ -149,13 +149,12 @@ describe('Escrow', () => {
             transaction = await escrow.connect(seller).finalizeSale(1)
             await transaction.wait()
         })
+        it('Updates ownership', async () => {
+            expect(await realEstate.ownerOf(1)).to.be.equal(buyer.address)
+        })
+        it('Updates balance', async () => {
+            expect(await escrow.getBalance()).to.be.equal(0)
+        })
     })
 
-    it('Updates ownership', async () => {
-        expect(await realEstate.ownerOf(1)).to.be.equal(buyer.address)
-    })
-
-    it('Updates balance', async () => {
-        expect(await escrow.getBalance()).to.be.equal(0)
-    })
 })
