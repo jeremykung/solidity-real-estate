@@ -128,6 +128,7 @@ describe('Escrow', () => {
     })
 
     describe('Sale', async () => {
+
         beforeEach(async () => {
             let transaction = await escrow.connect(buyer).depositEarnest(1, { value: tokens(5) })
             await transaction.wait()
@@ -149,12 +150,15 @@ describe('Escrow', () => {
             transaction = await escrow.connect(seller).finalizeSale(1)
             await transaction.wait()
         })
+
         it('Updates ownership', async () => {
             expect(await realEstate.ownerOf(1)).to.be.equal(buyer.address)
         })
+
         it('Updates balance', async () => {
             expect(await escrow.getBalance()).to.be.equal(0)
         })
+        
     })
 
 })
