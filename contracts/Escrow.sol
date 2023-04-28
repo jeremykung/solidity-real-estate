@@ -12,22 +12,6 @@ interface IERC721 {
 contract Escrow {
     address public nftAddress;
     address payable public seller;
-    address public inspector;
-    address public lender;
-
-    modifier onlyBuyer(uint256 _nftID){
-        require(msg.sender == buyer[_nftID], "Only buyer can call this method");
-        _;
-    }
-    modifier onlySeller() {
-        require(msg.sender ==seller,"Only seller cna call this method");
-        _;
-    }
-
-    modifier onlyInspector() {
-        require(msg.sender ==inspector,"Only inspector cna call this method");
-        _;
-    }
 
     mapping(uint256 => bool) public isListed;
     mapping(uint256 => uint256) public purchasePrice;
@@ -47,57 +31,7 @@ contract Escrow {
         inspector = _inspector;
         lender = _lender;
     }
-
-    function list(uint256 _nftID, address _buyer, uint256 _purchasePrice, uint256 _escrowAmount) public{
-        IERC721(nftAddress).transferFrom(msg.sender, address(this), _nftID);
-        
-        isListed[_nftID] = true;
-        purchasePrice[_nftID] = _purchasePrice;
-        escrowAmount[_nftID] = _escrowAmount; 
-        buyer[_nftID]=_buyer;
-
-    }
-
-    //Put Under Contract(only buyer - payable escrow)
-    function depositEarnest(uint256 _nftID) public payable onlyBuyer(_nftID){
-        require(msg.value >= escrowAmount[_nftID]);
-    }
-
-    //Update Inspection Status (only inspector)
-    function updateInspectionStatus(uint256 _nftID, bool _passed)
-        public
-        onlyInspector
-    {
-        inspectionPassed[_nftID]=_passed;
-    }
-
-    function approveSale(uint256 _nftID) public {
-        approval [_nftID][msg.sender]=true;
-    }
-
-
-    function finalizeSale(uint256 _nftID) public{
-        require(inspectionPassed[_nftID]);
-        require(approval[_nftID][buyer[_nftID]]);
-        require(approval[_nftID][seller]);
-        require(approval[_nftID][lender]);
-        require(address(this).balance >= purchasePrice[_nftID]);
-
-        isListed[_nftID]=false;
-
-        (bool success,)= payable(seller).call{value: address(this).balance}("");
-        require(success);
-
-        IERC721(nftAddress).transferFrom(address(this), buyer[_nftID], _nftID);
-    }
-
-    function concelSale(uint256 _nftID) public {
-        if(inspectionPassed[_nftID] == false){
-            payable(buyer[_nftID]).transfer(address(this).balance);
-        } else {
-            payable(seller).transfer(address(this).balance);
-        }
-    }
+}
 
     receive() external payable{}
     
