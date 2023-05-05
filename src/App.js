@@ -14,8 +14,9 @@ import Escrow from './abis/Escrow.json'
 import config from './config.json';
 
 function App() {
-
   const [provider, setProvider] = useState(null)
+  const [escrow, setEscrow] = useState(null)
+
   const [account, setAccount] = useState(null)
 
   const loadBlockchainData = async () => {
@@ -26,13 +27,9 @@ function App() {
 
     const realEstate = new ethers.Contract(config[network.chainId].realEstate.address, RealEstate, provider)
     const totalSupply = await realEstate.totalSupply() // bug coming from here in Console
-    // console.log('homes total supply:', totalSupply)
 
-    // config[network.chainId].realEstate.address
-    // config[network.chainId].escrow.address
-
-    // console.log('realEstate Address:', config[network.chainId].realEstate.address)
-    // console.log('escrow Address:', config[network.chainId].escrow.address)
+    const escrow = new ethers.Contract(config[network,chainId].escrow.address, Escrow, provider)
+    setEscrow(escrow)
 
     window.ethereum.on('accountsChanged', async () => {
       const accounts = await window.ethereum.request({method: 'eth_requestAccounts'})
