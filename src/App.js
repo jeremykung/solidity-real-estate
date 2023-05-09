@@ -18,6 +18,7 @@ function App() {
   const [escrow, setEscrow] = useState(null)
 
   const [account, setAccount] = useState(null)
+  const [homes, setHomes] = useState([])
 
   const loadBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -27,8 +28,19 @@ function App() {
 
     const realEstate = new ethers.Contract(config[network.chainId].realEstate.address, RealEstate, provider)
     const totalSupply = await realEstate.totalSupply() // bug coming from here in Console
+    const homes = []
 
-    const escrow = new ethers.Contract(config[network,chainId].escrow.address, Escrow, provider)
+    for(var i=1;i<=totalSupply; i++){
+      const uri = await realEstate.tokenURI(i)
+      const response = await fetch(uri)
+      const metadata = await response.json()
+      homes.push(metadata)
+    }
+
+    setHomes(homes)
+    console.log(homes)
+
+    const escrow = new ethers.Contract(config[network.chainId].escrow.address, Escrow, provider)
     setEscrow(escrow)
 
     window.ethereum.on('accountsChanged', async () => {
@@ -53,7 +65,8 @@ function App() {
         <h3>Homes for you</h3>
         <hr />
         <div className='cards'>
-          <div className='card'>
+          {homes.map ((home, index)=>(
+            <div className='card' key={index}>
             <div className='card__image'>
               <img src="" alt='Home' />
             </div>
@@ -67,6 +80,8 @@ function App() {
               <p>123 Elm St</p>
             </div>
           </div>
+          )
+          )}
         </div>
 
       </div>
