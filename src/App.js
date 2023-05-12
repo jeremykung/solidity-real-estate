@@ -23,11 +23,19 @@ function App() {
   const loadBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     setProvider(provider)
+    console.log('provider:', provider)
+
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+    console.log('accounts:', accounts)
+    setAccount(accounts[0])
 
     const network = await provider.getNetwork()
+    console.log('network:', network)
 
     const realEstate = new ethers.Contract(config[network.chainId].realEstate.address, RealEstate, provider)
+    console.log('realEstate', realEstate)
     const totalSupply = await realEstate.totalSupply() // bug coming from here in Console
+    console.log('totalSupply', totalSupply)
     const homes = []
 
     for(var i=1;i<=totalSupply; i++){
