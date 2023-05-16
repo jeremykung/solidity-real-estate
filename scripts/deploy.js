@@ -4,6 +4,10 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
+
+// Deploy CMD
+// npx hardhat run scripts/deploy.js --network localhost
+
 const hre = require("hardhat");
 
 const tokens = n => {
